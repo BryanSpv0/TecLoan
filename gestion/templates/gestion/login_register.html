@@ -1,0 +1,119 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TecLoad - Inicio de Sesión y Registro</title>
+    <link rel="stylesheet" href="{% static 'gestion/css/styles-login_register.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="forms-container">
+            <div class="signin-signup">
+                <!-- Formulario de Inicio de Sesión -->
+                <form method="POST" class="sign-in-form">
+                    {% csrf_token %}
+                    <h2 class="title">Iniciar Sesión</h2>
+                    <div class="input-field select-field">
+                        <i class="fas fa-user-tag"></i>
+                        <select name="tipo_usuario" required>
+                            <option value="" disabled selected>Selecciona tu rol</option>
+                            <option value="APRENDIZ">Aprendiz</option>
+                            <option value="DOCENTE">Docente</option>
+                            <option value="ADMINISTRADOR">Administrador</option>
+                        </select>
+                    </div>
+                    <div class="input-field">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" name="email" placeholder="Correo electrónico" required>
+                    </div>
+                    <div class="input-field">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" name="password" placeholder="Contraseña" required>
+                    </div>
+                    <button type="submit" name="inicio_sesion" class="btn solid">Iniciar Sesión</button>
+                </form>
+
+                <!-- Formulario de Registro -->
+                <form method="POST" class="sign-up-form">
+                    {% csrf_token %}
+                    <h2 class="title">Registrarse</h2>
+                    <div class="input-field">
+                        <i class="fas fa-user"></i>
+                        <input type="text" name="username" placeholder="Nombre de usuario" required>
+                    </div>
+                    <div class="input-field">
+                        <i class="fas fa-user"></i>
+                        <input type="text" name="first_name" placeholder="Nombre" required>
+                    </div>
+                    <div class="input-field">
+                        <i class="fas fa-user"></i>
+                        <input type="text" name="last_name" placeholder="Apellido" required>
+                    </div>
+                    <div class="input-field">
+                        <i class="fas fa-id-card"></i>
+                        <input type="text" name="documento" placeholder="Número de documento" required>
+                    </div>
+                    <div class="input-field">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" name="email" placeholder="Correo electrónico" required>
+                    </div>
+                    <div class="input-field">
+                        <i class="fas fa-phone"></i>
+                        <input type="tel" name="telefono" placeholder="Número de teléfono" pattern="[0-9]{10}" title="Ingresa un número de teléfono válido de 10 dígitos" required>
+                    </div>
+                    <div class="input-field select-field">
+                        <i class="fas fa-user-tag"></i>
+                        <select name="tipo_usuario" id="tipo_usuario_registro" required>
+                            <option value="" disabled selected>Selecciona tu rol</option>
+                            <option value="APRENDIZ">Aprendiz</option>
+                            <option value="DOCENTE">Docente</option>
+                        </select>
+                    </div>
+                    <div class="input-field carrera-field" style="display: none;">
+                        <i class="fas fa-graduation-cap"></i>
+                        <input type="text" name="carrera" placeholder="Carrera que estás cursando">
+                    </div>
+                    <div class="input-field">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" name="password" placeholder="Contraseña" required>
+                    </div>
+                    <button type="submit" name="registro" class="btn solid">Registrarse</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="panels-container">
+            <div class="panel left-panel">
+                <div class="content">
+                    <h3>¿Eres nuevo aquí?</h3>
+                    <p>Regístrate para acceder al sistema de préstamo de equipos y aulas.</p>
+                    <button class="btn transparent" id="sign-up-btn">Registrarse</button>
+                </div>
+                <img src="{% static 'gestion/img/login.svg' %}" class="image" alt="Imagen de inicio de sesión">
+            </div>
+            <div class="panel right-panel">
+                <div class="content">
+                    <h3>¿Ya tienes una cuenta?</h3>
+                    <p>Inicia sesión para acceder a todas las funcionalidades del sistema.</p>
+                    <button class="btn transparent" id="sign-in-btn">Iniciar Sesión</button>
+                </div>
+                <img src="{% static 'gestion/img/register.svg' %}" class="image" alt="Imagen de registro">
+            </div>
+        </div>
+
+        {% if modal_message %}
+        <div class="modal" id="messageModal">
+            <div class="modal-content {% if modal_message.type == 'error' %}error{% else %}success{% endif %}">
+                <span class="close-button">&times;</span>
+                <p>{{ modal_message.text }}</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <script src="{% static 'gestion/js/script-login_register.js' %}"></script>
+</body>
+</html>

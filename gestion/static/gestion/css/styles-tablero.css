@@ -1,0 +1,712 @@
+/* Mejora: Organización por secciones y variables CSS */
+:root {
+    --color-primary: #ff6b6b;
+    --color-secondary: #ffd166;
+    --color-success: #4CAF50;
+    --color-info: #b2ebf2;
+    --color-warning: #ffcc80;
+    --color-danger: #ff5252;
+    --border-radius: 15px;
+    --box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    --font-family: 'Comic Sans MS', 'Poppins', sans-serif;
+}
+
+/* Estilos base */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: var(--font-family);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    overflow-x: hidden; /* Mejora: Prevenir scroll horizontal */
+}
+
+/* Contenedor principal - Mejorado para mayor responsividad */
+.contenedor-principal {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Mejora: usar min-height en lugar de height fijo */
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+h1 {
+    text-align: center;
+    color: #ff6b6b;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    margin: 10px 0;
+    font-size: 2.5rem;
+}
+
+/* Contenedor del juego - Ajustado según la imagen */
+.contenedor-juego {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: nowrap; /* Evita que los elementos se envuelvan */
+    max-height: calc(90vh - 90px);
+    width: 100%;
+}
+
+/* Tablero - Ajustado según la imagen */
+#tablero {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(10, 1fr);
+    width: 60%; /* Aproximadamente 65% del ancho del contenedor según la imagen */
+    height: 90vh;
+    max-height: 472px;
+    border: 5px solid #ffd166;
+    border-radius: 15px;
+    background-color: #f9f7f3;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    overflow: hidden;
+    margin-right: 10px;
+}
+
+.temporizador-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.temporizador {
+    flex-grow: 1;
+    height: 10px;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.barra-tiempo {
+    height: 100%;
+    width: 100%;
+    background-color: #4CAF50;
+    transition: width 1s linear;
+}
+
+.opciones-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.opcion-btn {
+    padding: 10px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+}
+
+.opcion-btn:hover {
+    background-color: #e0e0e0;
+}
+
+.contador-preguntas {
+    margin: 10px 0;
+    font-weight: bold;
+    color: #555;
+}
+
+/* Casillas */
+.casilla {
+    border: 1px solid #ddd;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    font-weight: bold;
+    font-size: clamp(0.7rem, 1.5vw, 1.2rem);
+    color: #444;
+    transition: all 0.3s;
+}
+
+/* Colores alternados para las casillas */
+.casilla:nth-child(even) {
+    background-color: #e0f7fa;
+}
+
+.casilla:nth-child(odd) {
+    background-color: #b2ebf2;
+}
+
+/* Casillas especiales */
+.casilla[data-numero="100"] {
+    background-color: #ffcc80;
+    font-size: clamp(0.8rem, 1.8vw, 1.4rem);
+    font-weight: bold;
+    color: #d84315;
+}
+
+.casilla[data-numero="1"] {
+    background-color: #c8e6c9;
+    font-size: clamp(0.8rem, 1.8vw, 1.4rem);
+    font-weight: bold;
+    color: #2e7d32;
+}
+
+/* Casilla correcta (donde debe moverse) */
+/* Mejora visual para la casilla resaltada */
+.casilla-correcta {
+    background-color: rgba(255, 255, 0, 0.5) !important; /* Amarillo más visible */
+    box-shadow: 0 0 10px 5px rgba(255, 215, 0, 0.7) !important; /* Brillo dorado */
+    z-index: 2; /* Asegurar que el resaltado esté por encima */
+}
+
+/* Animación pulsante para la casilla objetivo */
+.casilla-pulsante {
+    animation: pulsar 1.5s infinite;
+}
+
+@keyframes pulsar {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* Resaltado para la ficha del jugador activo */
+.ficha-activa {
+    box-shadow: 0 0 10px 5px rgba(255, 255, 255, 0.8);
+    transform: scale(1.1);
+    transition: all 0.3s ease;
+}
+
+/* Hover válido */
+.hover-valido {
+    background-color: rgba(255, 193, 7, 0.5) !important;
+}
+
+/* Fichas de jugadores */
+.ficha {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    position: relative; /* Cambiado de absolute a relative */
+    z-index: 10;
+    cursor: grab;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s;
+    border: 2px solid white;
+    margin: 3px; /* Añadido margen para evitar superposición */
+}
+
+/* Cuando hay más de una ficha en la casilla, se encogerán */
+.casilla:has(.ficha:nth-child(2)) .ficha {
+    width: 25px;
+    height: 25px;
+}
+
+/* Eliminamos el posicionamiento específico para permitir que se ajusten automáticamente */
+/* #jugador1, #jugador2 {
+    position: static;
+} */
+
+.ficha:hover {
+    transform: scale(1.1);
+}
+
+.arrastrando {
+    opacity: 0.7;
+    transform: scale(1.2);
+}
+
+/* Panel de control - Ajustado según la imagen */
+.panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    width: 30%; /* Aproximadamente 30% del ancho del contenedor según la imagen */
+    height: 80vh;
+    max-height: 400px;
+    border: 3px solid #ffd166;
+    justify-content: space-between; /* Distribuye el contenido verticalmente */
+}
+
+.panel h2 {
+    color: #ff6b6b;
+    margin-top: 0;
+    font-size: 1.8rem;
+}
+
+.panel p {
+    margin: 10px 0;
+    font-size: 1.1rem;
+    color: #444;
+}
+
+/* Dado */
+.dice {
+    width: 80px;
+    height: 80px;
+    background-color: white;
+    border-radius: 12px;
+    margin: 15px auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    padding: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s;
+    border: 2px solid #ddd;
+}
+
+.dice:hover {
+    transform: rotate(-10deg) scale(1.05);
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    background-color: #ff6b6b;
+    border-radius: 50%;
+    align-self: center;
+    justify-self: center;
+}
+
+.fade {
+    animation: spin 0.6s ease-in-out;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    width: 90%;
+    border: 5px solid #ffd166;
+}
+
+.modal-content h2 {
+    color: #ff6b6b;
+    margin-top: 0;
+}
+
+.modal-content input {
+    padding: 10px;
+    font-size: 1.2rem;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    margin: 15px 0;
+    width: 80%;
+}
+
+.modal-content button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1.1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.modal-content button:hover {
+    background-color: #45a049;
+}
+
+/* Botón de reinicio */
+#reiniciar-btn {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #ff6b6b;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+    width: 80%; /* Hacer el botón más ancho */
+}
+
+#reiniciar-btn:hover {
+    background-color: #ff5252;
+}
+
+/* Animaciones */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .contenedor-juego {
+        flex-direction: column;
+    }
+    
+    #tablero {
+        width: 90vw;
+        height: 60vh;
+        max-width: none;
+    }
+    
+    .panel {
+        margin-top: 20px;
+        width: 90vw;
+        height: 30vh;
+        max-width: none;
+    }
+    
+    h1 {
+        font-size: 1.8rem;
+    }
+}
+
+/* Mensaje de juego */
+#mensaje-juego {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #ff6b6b;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 30px;
+    z-index: 1000;
+    transition: opacity 0.3s;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    font-weight: bold;
+    max-width: 80%;
+    max-height: 3%;
+    text-align: center;
+}
+
+/* Mejora: Media queries más detallados */
+@media (max-width: 1200px) {
+    .contenedor-juego {
+        flex-direction: column;
+    }
+    
+    #tablero {
+        width: 90%;
+        max-width: 600px;
+        margin-bottom: 20px;
+    }
+    
+    .panel {
+        width: 90%;
+        max-width: 600px;
+    }
+}
+
+@media (max-width: 600px) {
+    h1 {
+        font-size: 1.8rem;
+    }
+    
+    .casilla {
+        font-size: 0.7rem;
+    }
+    
+    .ficha {
+        width: 25px;
+        height: 25px;
+    }
+}
+
+/* Paso 2: Agregar los estilos CSS para el nuevo nav
+
+Ahora, necesitamos agregar los estilos CSS para que el nav se vea correctamente con el título centrado y los botones a los lados:
+
+/* Estilos mejorados para la barra de navegación */
+#barra-navegacion {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 25px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    margin-bottom: 15px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    border: 3px solid #ffd166;
+    position: relative;
+    overflow: hidden;
+}
+
+#barra-navegacion::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="3" fill="rgba(255,255,255,0.2)"/></svg>');
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+/* Contenedores de los elementos del nav */
+.nav-izquierdo, .nav-derecho {
+    flex: 1;
+    display: flex;
+    z-index: 1;
+}
+
+.nav-izquierdo {
+    justify-content: flex-start;
+}
+
+.nav-central {
+    flex: 2;
+    display: flex;
+    justify-content: center;
+    z-index: 1;
+}
+
+.nav-derecho {
+    justify-content: flex-end;
+}
+
+/* Título del juego */
+#titulo-juego {
+    margin: 0;
+    letter-spacing: 1px;
+    animation: pulsar 2s infinite;
+}
+
+/* Botones del nav */
+#barra-navegacion button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+#barra-navegacion button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.2);
+    transition: all 0.4s ease;
+    z-index: -1;
+}
+
+#barra-navegacion button:hover::before {
+    left: 0;
+}
+
+#barra-navegacion button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+#barra-navegacion button:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+#btn-reglas {
+    background: linear-gradient(to bottom, #4CAF50, #388E3C);
+    color: white;
+}
+
+#btn-config {
+    background: linear-gradient(to bottom, #2196F3, #1976D2);
+    color: white;
+}
+
+/* Animación para el título */
+@keyframes pulsar {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+    100% { transform: scale(1); }
+}
+
+/* Responsive para el nav */
+@media (max-width: 768px) {
+    #barra-navegacion {
+        padding: 10px 15px;
+    }
+    
+    #titulo-juego {
+        font-size: 24px;
+    }
+    
+    #barra-navegacion button {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 480px) {
+    #titulo-juego {
+        font-size: 20px;
+    }
+    
+    #barra-navegacion button {
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+    
+    .nav-izquierdo, .nav-derecho {
+        flex: 0;
+    }
+    
+    .nav-central {
+        flex: 1;
+    }
+}
+
+#btn-reglas:hover {
+    background: linear-gradient(to bottom, #5cb85c, #449d44);
+}
+
+#btn-config:hover {
+    background: linear-gradient(to bottom, #42a5f5, #2196F3);
+}
+
+/* Evitar scroll en la página principal */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.contenedor-principal {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    box-sizing: border-box;
+}
+
+.contenedor-juego {
+    flex: 1;
+    display: flex;
+    gap: 20px;
+    overflow: hidden;
+}
+
+/* Estilos para los modales */
+.modal-reglas .modal-content {
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 25px;
+}
+
+
+/* Modal de fin de juego */
+#modalFinJuego {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+#modalFinJuego .modal-content {
+    background: linear-gradient(145deg, #ffffff, #f0f0f0);
+    border-radius: var(--border-radius);
+    padding: 20px;
+    width: 80%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--box-shadow);
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.tabla-clasificacion {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.tabla-clasificacion th, .tabla-clasificacion td {
+    padding: 10px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+.tabla-clasificacion th {
+    background-color: var(--color-primary);
+    color: white;
+}
+
+.tabla-clasificacion tr.ganador {
+    background-color: rgba(255, 215, 0, 0.2);
+    font-weight: bold;
+}
+
+.botones-fin-juego {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+.btn-fin-juego {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--color-primary);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-fin-juego:hover {
+    transform: scale(1.05);
+    background-color: var(--color-secondary);
+}

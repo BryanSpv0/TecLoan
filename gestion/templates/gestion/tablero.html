@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tablero - Escatica</title>
+    <link rel="stylesheet" type='text/css' href='{% static "core/css/styles-tablero.css" %}'>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Fredoka+One&display=swap" rel="stylesheet">
+</head>
+<body style="background-image: url('{% static "core/images/fondo-escatica.jpg" %}');">
+    <div class="contenedor-principal">
+        
+        <div class="contenedor-juego">
+            <!-- Tablero -->
+            <div id="tablero"></div>
+            
+            <!-- Panel de control -->
+            <div class="panel">
+                <h2>Panel de Control</h2>
+                <div class="dice" id="dice-fade"></div>
+                <p>Turno: <span id="turno">Jugador 1</span></p>
+                <p>Resultado: <span id="resultadoDado">0</span></p>
+                <p>Arrastra tu ficha a la casilla correcta</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para preguntas matemáticas -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h2>¡Responde la Pregunta!</h2>
+            <p id="preguntaMatematica"></p>
+            <div class="input-container">
+            </div>
+        </div>
+    </div>
+
+    <!-- Sonidos -->
+    <audio id="sonidoDado" src="{% static 'core/sounds/sonidodado.mp3' %}"></audio>
+    <audio id="sonidoVictoria" src="{% static 'core/sounds/Sonido_Victoria.mp3' %}"></audio>
+    <audio id="sonidoMovimiento" src="{% static 'core/sounds/Movimiento.mp3' %}"></audio>
+    <audio id="colocarFicha" src="{% static 'core/sounds/Colocar_Ficha.mp3' %}"></audio>
+    <audio id="sonidoCorrecto" src="{% static 'core/sounds/sonido-correcto.mp3' %}"></audio>
+    <audio id="sonidoIncorrecto" src="{% static 'core/sounds/sonido-incorrecto.mp3' %}"></audio>
+    <!-- Scripts -->
+    <script src='{% static "core/js/scripts-tablero.js" %}'></script>
+</body>
+</html>
