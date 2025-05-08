@@ -4,7 +4,7 @@ from gestion import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('login/', views.login_register, name='login_register'),
+    path('', views.login_register, name='login_register'),
     path('home/', views.home, name='home'),
     path('gestion/logs/filtrar/', views.filtrar_logs, name='filtrar_logs'),
     

@@ -329,19 +329,18 @@
                 {% endif %}
             
             
-            <!-- Sección Equipos -->
+            <!-- Sección de Equipos -->
             <section id="equipment" class="section-content">
-                <div class="section-header">
-                    <h1 class="section-title">Gestión de Equipos</h1>
-                    <div class="section-actions">
-                        <button id="add-equipment-btn" class="btn btn-primary">
-                            <i class="fas fa-plus"></i> Registrar Equipo
-                        </button>
-                    </div>
+                <h1>Gestión de Equipos</h1>
+                
+                <div class="section-actions">
+                    <button id="btn-nuevo-equipo" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Nuevo Equipo
+                    </button>
                 </div>
                 
-                <div class="table-container">
-                    <table>
+                <div class="table-responsive">
+                    <table class="table">
                         <thead>
                             <tr>
                                 <th>ID</th>
@@ -354,27 +353,28 @@
                         <tbody id="equipment-table-body">
                             {% for equipo in equipos %}
                             <tr>
+                                <td>{{ equipo.id }}</td>
                                 <td>{{ equipo.nombre }}</td>
-                                <td>{{ equipo.descripcion|truncatechars:50 }}</td>
+                                <td>{{ equipo.descripcion }}</td>
                                 <td>
                                     {% if equipo.disponible %}
-                                    <span class="status active">Disponible</span>
+                                    <span class="badge bg-success">Disponible</span>
                                     {% else %}
-                                    <span class="status overdue">En uso</span>
+                                    <span class="badge bg-danger">No disponible</span>
                                     {% endif %}
                                 </td>
-                                <td class="actions">
-                                    <button class="edit-equipment-btn" data-id="{{ equipo.id }}">
+                                <td>
+                                    <button class="btn btn-sm btn-info btn-editar-equipo" data-id="{{ equipo.id }}">
                                         <i class="fas fa-edit"></i>
                                     </button>
-                                    <button class="delete-equipment-btn" data-id="{{ equipo.id }}">
+                                    <button class="btn btn-sm btn-danger btn-eliminar-equipo" data-id="{{ equipo.id }}">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </td>
                             </tr>
                             {% empty %}
                             <tr>
-                                <td colspan="4">No hay equipos registrados</td>
+                                <td colspan="5" class="text-center">No hay equipos registrados</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -623,37 +623,43 @@
     </div>
     
     <!-- Modales -->
-    <!-- Modal para añadir/editar equipo -->
-    <div id="equipment-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="equipment-modal-title" class="modal-title">Registrar Nuevo Equipo</h2>
-                <button class="close-btn">&times;</button>
+        <!-- Modal para crear/editar equipo -->
+        <div class="modal fade" id="modal-equipo" tabindex="-1" aria-labelledby="modal-equipo-title" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modal-equipo-title">Nuevo Equipo</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="form-equipo">
+                            {% csrf_token %}
+                            <input type="hidden" id="equipo-id" name="equipo_id">
+                            
+                            <div class="mb-3">
+                                <label for="nombre" class="form-label">Nombre</label>
+                                <input type="text" class="form-control" id="nombre" name="nombre" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="descripcion" class="form-label">Descripción</label>
+                                <textarea class="form-control" id="descripcion" name="descripcion" rows="3"></textarea>
+                            </div>
+                            
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="disponible" name="disponible" checked>
+                                <label class="form-check-label" for="disponible">Disponible</label>
+                            </div>
+                            
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-primary">Guardar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
-            <form id="equipment-form">
-                <input type="hidden" id="equipment-id" name="id">
-                <div class="form-group">
-                    <label for="equipment-name">Nombre</label>
-                    <input type="text" id="equipment-name" name="nombre" required>
-                </div>
-                <div class="form-group">
-                    <label for="equipment-description">Descripción</label>
-                    <textarea id="equipment-description" name="descripcion" rows="3"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="equipment-available">Disponible</label>
-                    <select id="equipment-available" name="disponible">
-                        <option value="true">Sí</option>
-                        <option value="false">No</option>
-                    </select>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-danger cancel-btn">Cancelar</button>
-                    <button id="save-classroom-btn" class="btn btn-success">Guardar</button>
-                </div>
-            </form>
         </div>
-    </div>
     
     <!-- Modal para añadir/editar aula -->
     <div id="classroom-modal" class="modal">

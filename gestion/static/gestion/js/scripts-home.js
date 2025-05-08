@@ -120,138 +120,123 @@ document.addEventListener('DOMContentLoaded', function() {
     // ===== GESTIÓN DE EQUIPOS =====
     
     // Mostrar modal para agregar/editar equipo
-    const addEquipmentBtn = document.querySelector('#add-equipment-btn');
-    if (addEquipmentBtn) {
-        addEquipmentBtn.addEventListener('click', function() {
+    // Abrir modal para crear nuevo equipo
+    const btnNuevoEquipo = document.getElementById('btn-nuevo-equipo');
+    if (btnNuevoEquipo) {
+        btnNuevoEquipo.addEventListener('click', function() {
             // Limpiar el formulario
-            document.querySelector('#equipment-form').reset();
-            document.querySelector('#equipment-id').value = '';
-            document.querySelector('#equipment-modal-title').textContent = 'Registrar Nuevo Equipo';
+            document.getElementById('form-equipo').reset();
+            document.getElementById('equipo-id').value = '';
+            document.getElementById('modal-equipo-title').textContent = 'Nuevo Equipo';
             
             // Mostrar el modal
-            document.querySelector('#equipment-modal').classList.add('show');
+            const equipoModal = new bootstrap.Modal(document.getElementById('modal-equipo'));
+            equipoModal.show();
         });
     }
     
-    // Cerrar modales al hacer clic en el botón de cerrar o fuera del modal
-    document.querySelectorAll('.modal .close-btn, .modal .cancel-btn').forEach(btn => {
+    // Cargar datos de un equipo para editar
+    function cargarEquipo(equipoId) {
+        fetch(`/gestion/equipos/obtener/${equipoId}/`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const equipo = data.equipo;
+                    document.getElementById('equipo-id').value = equipo.id;
+                    document.getElementById('nombre').value = equipo.nombre;
+                    document.getElementById('descripcion').value = equipo.descripcion;
+                    document.getElementById('disponible').checked = equipo.disponible;
+                    
+                    document.getElementById('modal-equipo-title').textContent = 'Editar Equipo';
+                    
+                    // Mostrar el modal
+                    const equipoModal = new bootstrap.Modal(document.getElementById('modal-equipo'));
+                    equipoModal.show();
+                } else {
+                    alert('Error al cargar el equipo: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al cargar el equipo');
+            });
+    }
+    
+    // Asignar evento a los botones de editar
+    document.querySelectorAll('.btn-editar-equipo').forEach(btn => {
         btn.addEventListener('click', function() {
-            this.closest('.modal').classList.remove('show');
+            const equipoId = this.getAttribute('data-id');
+            cargarEquipo(equipoId);
         });
     });
     
-    // Cerrar modal al hacer clic fuera del contenido
-    document.querySelectorAll('.modal').forEach(modal => {
-        modal.addEventListener('click', function(e) {
-            if (e.target === this) {
-                this.classList.remove('show');
-            }
-        });
-    });
-    
-    // Guardar equipo (crear/actualizar)
-    const equipmentForm = document.querySelector('#equipment-form');
-    if (equipmentForm) {
-        equipmentForm.addEventListener('submit', function(e) {
-            e.preventDefault();
+    // Guardar equipo (crear o actualizar)
+    const formEquipo = document.getElementById('form-equipo');
+    if (formEquipo) {
+        formEquipo.addEventListener('submit', function(e) {
+            e.preventDefault(); // Evitar que el formulario se envíe normalmente
             
-            const equipmentId = document.querySelector('#equipment-id').value;
+            // Obtener el token CSRF
+            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            
+            // Crear FormData con los datos del formulario
             const formData = new FormData(this);
             
-            // Enviar datos al servidor
-            fetch(`/gestion/equipos/guardar/`, {
+            // Enviar la solicitud
+            fetch('/gestion/equipos/guardar/', {
                 method: 'POST',
                 body: formData,
                 headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
+                    'X-CSRFToken': csrftoken
                 }
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Cerrar modal
-                    document.querySelector('#equipment-modal').classList.remove('show');
-                    
-                    // Mostrar mensaje de éxito
-                    showNotification(data.message, 'success');
+                    alert(data.mensaje);
+                    // Cerrar el modal
+                    const equipoModal = bootstrap.Modal.getInstance(document.getElementById('modal-equipo'));
+                    equipoModal.hide();
                     
                     // Recargar la página para ver los cambios
-                    setTimeout(() => {
-                        location.reload();
-                    }, 1500);
+                    window.location.reload();
                 } else {
-                    showNotification(data.message, 'error');
+                    alert('Error: ' + data.error);
                 }
             })
             .catch(error => {
-                showNotification('Error al procesar la solicitud', 'error');
+                console.error('Error:', error);
+                alert('Error al guardar el equipo');
             });
         });
     }
     
-    // Editar equipo
-    document.querySelectorAll('.edit-equipment-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const equipmentId = this.getAttribute('data-id');
-            
-            // Obtener datos del equipo
-            fetch(`/gestion/equipos/obtener/${equipmentId}/`, {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Llenar el formulario con los datos
-                    document.querySelector('#equipment-id').value = data.equipo.id;
-                    document.querySelector('#equipment-name').value = data.equipo.nombre;
-                    document.querySelector('#equipment-description').value = data.equipo.descripcion;
-                    document.querySelector('#equipment-available').value = data.equipo.disponible.toString();
-                    
-                    // Cambiar el título del modal
-                    document.querySelector('#equipment-modal-title').textContent = 'Editar Equipo';
-                    
-                    // Mostrar el modal
-                    document.querySelector('#equipment-modal').classList.add('show');
-                } else {
-                    showNotification(data.message, 'error');
-                }
-            })
-            .catch(error => {
-                showNotification('Error al obtener los datos del equipo', 'error');
-            });
-        });
-    });
-    
     // Eliminar equipo
-    document.querySelectorAll('.delete-equipment-btn').forEach(btn => {
+    document.querySelectorAll('.btn-eliminar-equipo').forEach(btn => {
         btn.addEventListener('click', function() {
-            if (confirm('¿Está seguro de eliminar este equipo?')) {
-                const equipmentId = this.getAttribute('data-id');
+            if (confirm('¿Estás seguro de que deseas eliminar este equipo?')) {
+                const equipoId = this.getAttribute('data-id');
+                const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
                 
-                fetch(`/gestion/equipos/eliminar/${equipmentId}/`, {
+                fetch(`/gestion/equipos/eliminar/${equipoId}/`, {
                     method: 'POST',
                     headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRFToken': getCookie('csrftoken')
+                        'X-CSRFToken': csrftoken
                     }
                 })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        showNotification(data.message, 'success');
-                        
+                        alert(data.mensaje);
                         // Recargar la página para ver los cambios
-                        setTimeout(() => {
-                            location.reload();
-                        }, 1500);
+                        window.location.reload();
                     } else {
-                        showNotification(data.message, 'error');
+                        alert('Error: ' + data.error);
                     }
                 })
                 .catch(error => {
-                    showNotification('Error al eliminar el equipo', 'error');
+                    console.error('Error:', error);
+                    alert('Error al eliminar el equipo');
                 });
             }
         });

@@ -103,9 +103,13 @@ def home(request):
         
         total_prestamos = Prestamo.objects.count()
         prestamos_activos = Prestamo.objects.filter(devuelto=False).count()
+        
+        # Obtener la lista completa de equipos para la sección de equipos
+        equipos = Equipo.objects.all()
     except Exception:
         # En caso de error, establecer valores predeterminados
         total_equipos = equipos_disponibles = total_aulas = aulas_disponibles = total_prestamos = prestamos_activos = 0
+        equipos = []
     
     total_usuarios = Usuario.objects.count()
     
@@ -145,14 +149,15 @@ def home(request):
         todos_usuarios = []
     
     context = {
-        "usuario": request.user,
-        "total_equipos": total_equipos,
-        "equipos_disponibles": equipos_disponibles,
-        "total_aulas": total_aulas,
-        "aulas_disponibles": aulas_disponibles,
-        "total_prestamos": total_prestamos,
-        "prestamos_activos": prestamos_activos,
-        "total_usuarios": total_usuarios,
+        'usuario': request.user,
+        'total_equipos': total_equipos,
+        'equipos_disponibles': equipos_disponibles,
+        'total_aulas': total_aulas,
+        'aulas_disponibles': aulas_disponibles,
+        'total_prestamos': total_prestamos,
+        'prestamos_activos': prestamos_activos,
+        'total_usuarios': total_usuarios,
+        'equipos': equipos,
         "prestamos_recientes": prestamos_recientes,
         "usuarios_nuevos": usuarios_nuevos,
         "todos_usuarios": todos_usuarios  # Agregamos todos los usuarios al contexto
@@ -335,85 +340,59 @@ def eliminar_usuario(request, usuario_id):
 
 # Vistas para Equipos
 def obtener_equipo(request, equipo_id):
-    """Vista para obtener datos de un equipo mediante AJAX"""
     try:
         equipo = Equipo.objects.get(id=equipo_id)
         data = {
-            'success': True,
-            'equipo': {
-                'id': equipo.id,
-                'nombre': equipo.nombre,
-                'tipo': equipo.tipo,
-                'codigo': equipo.codigo,
-                'descripcion': equipo.descripcion,
-                'estado': equipo.estado,
-                'disponible': equipo.disponible,
-            }
+            'id': equipo.id,
+            'nombre': equipo.nombre,
+            'descripcion': equipo.descripcion,
+            'disponible': equipo.disponible
         }
+        return JsonResponse({'success': True, 'equipo': data})
     except Equipo.DoesNotExist:
-        data = {'success': False, 'message': 'Equipo no encontrado'}
-    
-    return JsonResponse(data)
+        return JsonResponse({'success': False, 'error': 'Equipo no encontrado'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
 
 def guardar_equipo(request):
-    """Vista para guardar (crear/actualizar) un equipo mediante AJAX"""
     if request.method == 'POST':
-        equipo_id = request.POST.get('id', '')
-        
-        # Datos del formulario
+        equipo_id = request.POST.get('equipo_id', '')
         nombre = request.POST.get('nombre', '').strip()
-        tipo = request.POST.get('tipo', '')
-        descripcion = request.POST.get('descripcion', '')
-        estado = request.POST.get('estado', 'DISPONIBLE')
-        disponible = estado == 'DISPONIBLE'
+        descripcion = request.POST.get('descripcion', '').strip()
+        disponible = request.POST.get('disponible', '') == 'on'
         
-        # Validar datos básicos
-        if not all([nombre, tipo]):
-            return JsonResponse({'success': False, 'message': 'Faltan campos obligatorios'})
+        if not nombre:
+            return JsonResponse({'success': False, 'error': 'El nombre del equipo es obligatorio'})
         
         try:
-            # Actualizar equipo existente
             if equipo_id:
+                # Actualizar equipo existente
                 equipo = Equipo.objects.get(id=equipo_id)
                 equipo.nombre = nombre
-                equipo.tipo = tipo
                 equipo.descripcion = descripcion
-                equipo.estado = estado
                 equipo.disponible = disponible
                 equipo.save()
                 mensaje = 'Equipo actualizado correctamente'
-            # Crear nuevo equipo
             else:
-                # Generar código único
-                codigo = str(uuid.uuid4())[:8].upper()
-                
-                # Crear el equipo
+                # Crear nuevo equipo
                 equipo = Equipo.objects.create(
                     nombre=nombre,
-                    tipo=tipo,
-                    codigo=codigo,
                     descripcion=descripcion,
-                    estado=estado,
                     disponible=disponible
                 )
-                
-                # Generar código QR para el equipo
-                generar_qr_equipo(equipo)
-                
                 mensaje = 'Equipo creado correctamente'
             
             # Registrar la acción en el log
             LogActividad.objects.create(
                 usuario=request.user,
-                accion=f"{'Actualizó' if equipo_id else 'Creó'} el equipo {equipo.nombre}"
+                accion=f"{mensaje}: {equipo.nombre}"
             )
             
-            return JsonResponse({'success': True, 'message': mensaje})
-            
+            return JsonResponse({'success': True, 'mensaje': mensaje})
         except Exception as e:
-            return JsonResponse({'success': False, 'message': f'Error: {str(e)}'})
+            return JsonResponse({'success': False, 'error': str(e)})
     
-    return JsonResponse({'success': False, 'message': 'Método no permitido'})
+    return JsonResponse({'success': False, 'error': 'Método no permitido'})
 
 def eliminar_equipo(request, equipo_id):
     """Vista para eliminar un equipo mediante AJAX"""
